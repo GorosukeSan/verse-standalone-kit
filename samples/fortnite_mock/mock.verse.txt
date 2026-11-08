@@ -1,0 +1,23 @@
+# モック: /Fortnite.com などの代わりに、使う API だけを自前で書く（verse.exe で動かす用）
+using { /Verse.org/Concurrency }
+FortMock<public> := module:
+    # UEFN の Print は suspends ではない。verse.exe の Print は suspends なので spawn で出す
+    MockPrint<public>(Message:string, ?Duration:float = 2.0):void =
+        spawn{(/Verse.org/Verse:)Print(Message)}
+    Sleep<public>(Seconds:float)<suspends>:void = Yield()
+    agent<public> := class<unique>:
+        Name<public>:string = "player"
+    fort_character<public> := class<unique>:
+        Owner<public>:agent
+    (Agent:agent).GetFortCharacter<public>()<transacts><decides>:fort_character = fort_character{Owner := Agent}
+    creative_device<public> := class:
+        OnBegin<public>()<suspends>:void = {}
+    # Subscribe は 1 件だけ持つ簡易版
+    agent_event<public> := class:
+        var Handler<public>:?type{_(:agent):void} = false
+        Subscribe<public>(F:type{_(:agent):void}):void = set Handler = option{F}
+        Signal<public>(Agent:agent):void = if (F := Handler?) { F(Agent) }
+    button_device<public> := class:
+        InteractedWithEvent<public>:agent_event = agent_event{}
+        # テスト用: ボタンを押したことにする
+        Press<public>(Agent:agent):void = InteractedWithEvent.Signal(Agent)

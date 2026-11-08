@@ -1,0 +1,8 @@
+# テスト用の Main: UEFN がやること（デバイスを置いて OnBegin を呼ぶ、プレイヤーが押す）を代わりにやる
+Main(Args:[]string, Env:[string]string)<suspends>:void =
+    D := hello_device{}
+    spawn{D.OnBegin()}
+    FortMock.Sleep(0.0)
+    D.Button.Press(agent{})
+    D.Button.Press(agent{Name := "p2"})
+    FortMock.Sleep(0.0)

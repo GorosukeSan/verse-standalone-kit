@@ -1,0 +1,25 @@
+# --- Epic Games のコード・ビルド結果（配布禁止。docs/LEGAL.md） ---
+/engine/
+/runtime*/
+*.exe
+*.dll
+*.pdb
+*.lib
+*.vmodule
+*.digest.verse
+
+# --- 利用者ごとの設定 ---
+/kit.local.json
+
+# --- Python ---
+__pycache__/
+*.pyc
+
+# --- その他 ---
+*.zip
+*.tmp
+Thumbs.db
+desktop.ini
+.vs/
+.vscode/
+.idea/
