@@ -57,13 +57,13 @@ def main():
     vs = vs_info()
     report(bool(vs), f"Visual Studio (C++): {vs or '見つからない'}",
            "Visual Studio 2022 以降と「C++ によるデスクトップ開発」「.NET」ワークロードが必要です")
-    msvcp = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "System32", "msvcp140.dll")
+    msvcp = os.path.join(common.windows_dir(), "System32", "msvcp140.dll")
     report(True if os.path.exists(msvcp) else None, "VC++ ランタイム (msvcp140.dll)",
            "ビルド後の exe の実行に必要です。setup.bat --full-setup か Microsoft の VC++ 再頒布可能パッケージで入ります")
 
     eng = os.path.abspath(args.engine_dir)
     report(len(eng) <= 60 or None, f"エンジンのフォルダ: {eng}（{len(eng)} 文字）",
-           "UE のビルドは長いパスで失敗しやすいです。D:\\UE6 のような短い場所を推奨します")
+           "UE のビルドは長いパスで失敗しやすいです。ドライブ直下の短いフォルダ（UE6 など）を推奨します")
     drive = os.path.splitdrive(eng)[0] + "\\"
     if os.path.exists(drive):
         free = shutil.disk_usage(drive).free / 1024 ** 3

@@ -120,8 +120,13 @@ def git_exe():
     return exe
 
 
+def windows_dir():
+    """Windows のフォルダ（SystemRoot が無いときはシステムドライブ直下の Windows）"""
+    return os.environ.get("SystemRoot") or os.path.join(os.environ.get("SystemDrive", "C:") + os.sep, "Windows")
+
+
 def cmd_exe():
-    return os.environ.get("ComSpec") or os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "System32", "cmd.exe")
+    return os.environ.get("ComSpec") or os.path.join(windows_dir(), "System32", "cmd.exe")
 
 
 def run(cmd, cwd=None, check=True, env=None):

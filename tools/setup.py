@@ -3,7 +3,7 @@
 使い方:
   python tools/setup.py                       初回: clone → 依存ファイル → ビルド → 切り出し
   python tools/setup.py --update              最新に更新して作り直す
-  python tools/setup.py --use-existing D:\\UE6 手元の UE ソース（clone 済み）を使う
+  python tools/setup.py --use-existing <フォルダ> 手元の UE ソース（clone 済み）を使う
   python tools/setup.py --ref <コミット>       特定のコミットに固定する（キットが clone した UE のみ）
 
 認証について:
