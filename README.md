@@ -38,7 +38,7 @@ verse-check samples\hello
 verse-run samples\hello\hello.verse
 ```
 
-UE は既定でキットの中の `engine\` に clone します（最新 1 コミットだけの浅い clone）。UE のビルドは長いパスに弱いので、`setup --engine-dir D:\UE6` のように短い場所を勧めます。キットの中に置く場合は `engine\` 以外は使えません（Git の除外対象にならないため）。
+UE は既定でキットの中の `engine\` に clone します（最新 1 コミットだけの浅い clone）。UE のビルドは長いパスに弱いので、`setup --engine-dir <ドライブ直下の短いフォルダ>` のように短い場所を勧めます。キットの中に置く場合は `engine\` 以外は使えません（Git の除外対象にならないため）。
 
 ### setup のオプション
 
@@ -68,6 +68,22 @@ update            &rem 最新を取得して作り直す（ローカルの変更
 - `fortnite`: UEFN の digest を読み込み、`using { /Fortnite.com/Devices }` などを含むコードをそのまま型チェックする
   - digest はキットに入っていません。UEFN でプロジェクトを一度開くと `%LOCALAPPDATA%\UnrealEditorFortnite\Saved\VerseProject\*\Digests\BuiltIn` にでき、自動で見つけます。別の場所なら `--digests <フォルダ>` か環境変数 `VERSE_KIT_DIGESTS`
   - UE のコンパイラは UEFN より新しいことが多く、digest 自体にもエラーが出ます。digest 内のエラーは判定から外し、自分のファイルのエラーだけで OK / NG を決めます。digest 側の壊れた宣言のせいで、UEFN では通るコードが NG になることがあります
+
+### UEFN のビルドでだけ出るエラーを拾う（fortnite）
+
+素の型チェックでは通っても、UEFN のビルドでだけ出るエラーがあります。次のオプションで拾えます（どれかを付けると `--profile` を省略しても `fortnite` になります）。
+
+```bat
+verse-check <Content と同じ並びのソースフォルダ> --uefn-project <プロジェクト名>
+verse-check <ソースフォルダ> --content <プロジェクトの Content フォルダ>
+```
+
+- **アセットのフォルダとの名前のぶつかり（V3588 / V3532）**: UEFN は Content の中でアセットのあるフォルダもモジュールにします。`Prefab/` にアセットがあると、関数の引数や変数の `Prefab` とぶつかります
+  - `--uefn-project <名前|.vproject>`: UEFN がプロジェクトを開いたときに書き出す `%LOCALAPPDATA%\UnrealEditorFortnite\Saved\VerseProject\<名前>\vproject\<名前>.vproject` を読み、そのプロジェクトの versePath・実験的機能の設定・Assets digest（アセットのフォルダのモジュール）・同じ版の BuiltIn digest を使います。Assets digest は最後に UEFN で開いたときの内容です
+  - `--content <Content>`: `.uasset` / `.umap` のあるフォルダ（`__ExternalActors__` などは除く）から空のモジュールの代役を作って足します。UEFN で開いていないときや、そのあとフォルダを足したときに。`--uefn-project` と一緒に付けると Assets digest の代わりにこちらを使います
+  - ソースフォルダの根を Content と同じ並びにしてください（ぶつかるのは同じモジュールの中の名前です）
+- **引数で受けた関数を Subscribe に渡す（V3502）**: `Watch(Ev:listenable(int), Handler:type{_(:int):void}) = Ev.Subscribe(Handler)` のように、引数の関数をそのまま `Subscribe` に渡すと UEFN のビルドで V3502 になります。コンパイラでは出ないので、書き方を見る lint で `UEFN build lint error` として出し、エラー数に数えます。メソッドを持つクラスで包み、そのメソッドを渡すと通ります
+  - lint は `fortnite` プロファイルで既定オン。`--no-lint` で止まります。書き方だけを見るので、見逃しや誤検出はありえます
 
 ## フォルダ構成
 
